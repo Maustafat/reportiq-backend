@@ -4,6 +4,33 @@ import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
 
+// ─── POST /orders/confirm-payment ───────────────────────────────────
+// Called after Stripe redirect — marks latest pending order as completed
+router.post("/confirm-payment", requireAuth, async (req, res) => {
+  try {
+    const order = await prisma.order.findFirst({
+      where: { userId: req.userId, status: "pending" },
+      orderBy: { createdAt: "desc" },
+      include: { items: true },
+    });
+
+    if (!order) {
+      return res.json({ message: "Nessun ordine da confermare" });
+    }
+
+    const updated = await prisma.order.update({
+      where: { id: order.id },
+      data: { status: "completed" },
+      include: { items: true },
+    });
+
+    res.json({ order: updated });
+  } catch (err) {
+    console.error("Confirm payment error:", err);
+    res.status(500).json({ error: "Errore nella conferma del pagamento" });
+  }
+});
+
 // ─── GET /orders ────────────────────────────────────────────────────
 // List all orders for the authenticated user
 router.get("/", requireAuth, async (req, res) => {
