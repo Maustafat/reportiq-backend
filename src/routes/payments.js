@@ -9,9 +9,9 @@ const router = Router();
 
 // Report type pricing (cents)
 const REPORT_PRICES = {
-  base: { name: "Report Base", price: 2990 },
+  basic: { name: "Report Base", price: 2990 },
   financial: { name: "Report Finanziario", price: 7990 },
-  complete: { name: "Report Completo", price: 14990 },
+  full: { name: "Report Completo", price: 14990 },
 };
 
 // ─── POST /payments/checkout ────────────────────────────────────────
